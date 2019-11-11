@@ -24,6 +24,7 @@ namespace LiteManagedHttpDownload
                 return ""+e.Message;
             }
         }
+        public static int BufferSize=1024;
         public static void DownloadToFileWithProgressAsync(string Url,string path,ref double Progress)
         {
             HttpClient httpClient = new HttpClient();
@@ -33,7 +34,7 @@ namespace LiteManagedHttpDownload
             var FW=fileInfo.OpenWrite();
             s.Wait();
             var st = s.Result;
-            byte[] b = new byte[64];
+            byte[] b = new byte[BufferSize];
             while (st.Position<st.Length)
             {
                 st.Read(b, 0, b.Length);
