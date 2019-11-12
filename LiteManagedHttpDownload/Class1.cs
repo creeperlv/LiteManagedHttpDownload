@@ -25,8 +25,12 @@ namespace LiteManagedHttpDownload
             }
         }
         public static int BufferSize=1024;
-        public static void DownloadToFileWithProgressAsync(string Url,string path,ref double Progress)
+        public static string DownloadToFileWithProgressBuffered(string Url,string path,ref double Progress,int BufferS=-1)
         {
+            if (BufferS == -1)
+            {
+                BufferS = BufferSize;
+            }
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3952.0 Safari/537.36 Edg/80.0.320.3 LiteManagedHttpDownloader/1.0.0.0");
             var s =(httpClient.GetStreamAsync(Url));
@@ -34,7 +38,7 @@ namespace LiteManagedHttpDownload
             var FW=fileInfo.OpenWrite();
             s.Wait();
             var st = s.Result;
-            byte[] b = new byte[BufferSize];
+            byte[] b = new byte[BufferS];
             while (st.Position<st.Length)
             {
                 st.Read(b, 0, b.Length);
@@ -45,6 +49,7 @@ namespace LiteManagedHttpDownload
             st.Dispose();
             FW.Close();
             FW.Dispose();
+            return "SUCCESS";
         }
         public static async void DownloadToFileFromBase64Async(string Url,string path)
         {
