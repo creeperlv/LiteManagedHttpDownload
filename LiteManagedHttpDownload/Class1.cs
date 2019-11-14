@@ -33,18 +33,36 @@ namespace LiteManagedHttpDownload
             }
             HttpClient httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3952.0 Safari/537.36 Edg/80.0.320.3 LiteManagedHttpDownloader/1.0.0.0");
-            var s =(httpClient.GetStreamAsync(Url));
+            var s= httpClient.GetAsync(Url);
+            //var s =(httpClient.GetStreamAsync(Url));
             FileInfo fileInfo = new FileInfo(path);
+            if(File.Exists(path))
+            File.WriteAllText(path, "");
             var FW=fileInfo.OpenWrite();
             s.Wait();
-            var st = s.Result;
+            var message = s.Result;
+            var sta = message.Content.ReadAsStreamAsync();
+            sta.Wait();
+            var st = sta.Result;
             byte[] b = new byte[BufferS];
+
+            foreach (var item in message.Content.Headers)
+            {
+                Console.WriteLine($"{item.Key}");
+                foreach (var i in item.Value)
+                {
+                    Console.WriteLine($"{i}");
+                }
+            }
+            
             while (st.Position<st.Length)
             {
-                st.Read(b, 0, b.Length);
-                FW.Write(b, 0, b.Length);
-                Progress = (double)st.Position / (double)st.Length;
+                int r=st.Read(b, 0, b.Length);
+                //Console.WriteLine();
+                FW.Write(b, 0, r);
+                Progress = (((double)st.Position) / ((double)st.Length));
             }
+            Progress = 1;
             st.Close();
             st.Dispose();
             FW.Close();
