@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Net.Http;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace LiteManagedHttpDownload
@@ -18,6 +19,36 @@ namespace LiteManagedHttpDownload
                 var s = await httpClient.GetByteArrayAsync(Url);
                 File.WriteAllBytes(path, s);
                 return "SUCCESS";
+            }
+            catch (Exception e)
+            {
+                return ""+e.Message;
+            }
+        }
+        public static async Task<string> DownloadToTextFileAsync(string Url,string path,Encoding encoding= null)
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3952.0 Safari/537.36 Edg/80.0.320.3 LiteManagedHttpDownloader/1.0.0.0");
+            try
+            {
+                Encoding enc = null;
+                if (encoding == null) enc = Encoding.Default; else enc = encoding;
+                var s = await httpClient.GetStringAsync(Url);
+                File.WriteAllText(path, s,enc);
+                return "SUCCESS";
+            }
+            catch (Exception e)
+            {
+                return ""+e.Message;
+            }
+        }
+        public static async Task<string> DownloadToText(string Url,string path)
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Add("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/80.0.3952.0 Safari/537.36 Edg/80.0.320.3 LiteManagedHttpDownloader/1.0.0.0");
+            try
+            {   var s = await httpClient.GetStringAsync(Url);
+                return s;
             }
             catch (Exception e)
             {
